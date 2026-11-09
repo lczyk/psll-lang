@@ -35,6 +35,12 @@ cd psll-lang
 pip install .
 ```
 
+Or, on Linux, as a snap (bundles Ruby and the Pyramid Scheme interpreter, so `psll run` works out of the box):
+
+```sh
+snap install psll
+```
+
 Then `psll` command should be available in your command line. Run `psll --help` to lean more.
 
 You can also skip the installation and run the python module as a script with `python -m psll ...` without any installation. 
