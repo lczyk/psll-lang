@@ -12,6 +12,11 @@ confinement: strict
 apps:
   psll:
     command: bin/psll
+    # debian's ruby has its lib paths compiled in as /usr/lib/ruby, which is
+    # the base snap here. pyra.rb needs no gems, so skip loading them.
+    environment:
+      RUBYLIB: $SNAP/usr/lib/ruby/vendor_ruby:$SNAP/usr/lib/ruby/3.2.0:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/ruby/3.2.0
+      RUBYOPT: --disable-gems
     plugs:
       - home
 
