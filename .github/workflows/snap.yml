@@ -1,0 +1,111 @@
+name: snap
+
+# build and smoke-test the snap on every push and PR. pushes to master also
+# upload to the edge channel. promotion past edge is done by hand.
+
+on:
+  push:
+    branches:
+      - master
+      #
+    paths-ignore:
+      - '**/*.md'
+      #
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      #
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - arch: amd64
+            os: ubuntu-latest
+          - arch: arm64
+            os: ubuntu-24.04-arm
+          #
+    runs-on: ${{ matrix.runner.os }}
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build
+        uses: snapcore/action-build@v1
+        id: snapcraft
+        with:
+          snapcraft-args: pack --output psll_${{ matrix.runner.arch }}.snap
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: psll_${{ matrix.runner.arch }}.snap
+          path: ${{ steps.snapcraft.outputs.snap }}
+
+  smoke-test:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - arch: amd64
+            os: ubuntu-24.04
+          - arch: amd64
+            os: ubuntu-22.04
+          - arch: arm64
+            os: ubuntu-24.04-arm
+          - arch: arm64
+            os: ubuntu-22.04-arm
+          #
+    runs-on: ${{ matrix.runner.os }}
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: psll_${{ matrix.runner.arch }}.snap
+
+      - name: Install snap
+        run: sudo snap install --dangerous psll_${{ matrix.runner.arch }}.snap
+
+      - name: Run examples
+        run: sh tests/snap-smoke.sh
+        env:
+          PSLL: /snap/bin/psll
+
+  publish:
+    needs: smoke-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - amd64
+          - arm64
+          #
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: psll_${{ matrix.arch }}.snap
+
+      - name: Upload to edge
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        with:
+          snap: psll_${{ matrix.arch }}.snap
+          release: edge
