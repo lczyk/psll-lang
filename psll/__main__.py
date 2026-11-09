@@ -465,10 +465,11 @@ def parse_args() -> tuple[argparse.Namespace, list[str]]:
     args, extra = parser.parse_known_args()
 
     # Parse subcommand as Subcommand enum
-    args.subcommand = Subcommand(args.subcommand)
+    subcommand = Subcommand(args.subcommand)
+    args.subcommand = subcommand
 
     # Dispatch to subcommand-specific validation
-    return args.subcommand.validate_options(args, extra)
+    return subcommand.validate_options(args, extra)
 
 
 # ======================================================================
