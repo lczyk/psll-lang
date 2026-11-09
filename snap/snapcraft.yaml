@@ -28,10 +28,13 @@ parts:
       - ruby
       #
 
-  # drop the bundled interpreter at $SNAP/pyra.rb where _snap_path() finds it
+  # drop the bundled interpreter at $SNAP/pyra.rb where _snap_path() finds it.
+  # same pinned commit as PYRA_RB_URL in psll/__main__.py
   pyra:
     plugin: dump
-    source: .
+    source: https://raw.githubusercontent.com/ConorOBrien-Foxx/Pyramid-Scheme/fd183d296f08e0cba8bf55da907697eaf412f6a7/pyra.rb
+    source-type: file
+    source-checksum: sha256/d19de824c38c4bd791a94ad7c5b8ccc9c3dee0d82cb9de1e92edcf3fa4724dd5
     stage:
       - pyra.rb
       #
