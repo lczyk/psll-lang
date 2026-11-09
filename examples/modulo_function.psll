@@ -27,11 +27,11 @@
     (out a " \/\/ " b " = ")
 
     (set atmp a) (set btmp b) // Save a and b
-    (mod)
+    (div)
     (out a)
 
     (set a atmp) (set b btmp)
-    (div)
+    (mod)
     (out " rem " a "\n")
 ))
 
