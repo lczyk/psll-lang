@@ -6,7 +6,6 @@ from functools import partial
 from typing import Callable, Optional
 
 import pytest
-from conftest import Subtests
 
 # Get all the example outputs from the examples_outputs directory
 
@@ -145,17 +144,17 @@ def run(filename: str) -> str:
     )
 
 
+@pytest.mark.parametrize("basename, compare", TEST_CASES, ids=[basename for basename, _ in TEST_CASES])
 def test_examples(
+    basename: str,
+    compare: Callable[[str, str], None],
     ruby: Optional[str],
     pyra: Optional[str],
-    subtests: Subtests,
 ) -> None:
     """Test that the examples compile and run correctly"""
-    for basename, compare in TEST_CASES:
-        with subtests.test(basename=basename):
-            filename = os.path.join(__examples_dir__, basename + ".psll")
-            output = compile_and_run(filename, ruby=ruby, pyra=pyra)
-            compare(basename, output)
+    filename = os.path.join(__examples_dir__, basename + ".psll")
+    output = compile_and_run(filename, ruby=ruby, pyra=pyra)
+    compare(basename, output)
 
 
 # @pytest.mark.parametrize("filename, expected_output", psll_examples)
