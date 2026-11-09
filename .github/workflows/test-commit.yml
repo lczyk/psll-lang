@@ -24,18 +24,14 @@ jobs:
         with:
           ruby-version: 2.6
 
-      - name: Set up Python 3.9
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      - name: Set up uv with Python 3.9
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
-          python-version: 3.9
+          python-version: '3.9'
+          activate-environment: true
 
-      - name: Install flit and uv
-        run: |
-          pip install flit uv
-          uv sync
-
-      - name: Flit install
-        run: flit install
+      - name: Install
+        run: uv sync
 
       - name: Check with ruff
         run: uv run ruff format --check .
@@ -47,9 +43,7 @@ jobs:
         run: bash test.sh -e -c
 
       - name: Push to coveralls
-        run: |
-          uv pip install --system --upgrade coveralls
-          coveralls debug --service=github
+        run: uv run --with coveralls coveralls debug --service=github
 
       # Performance check
 
