@@ -1,6 +1,6 @@
 
 
-.PHONY: all build_wheel list_wheel build_sdist list_sdist install clean test tox
+.PHONY: all build_wheel list_wheel build_sdist list_sdist install clean test tox snap
 
 all: build_wheel list_wheel
 
@@ -31,3 +31,6 @@ test:
 
 tox: clean
 	tox
+
+snap:
+	snapcraft pack

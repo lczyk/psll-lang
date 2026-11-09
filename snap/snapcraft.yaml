@@ -1,0 +1,37 @@
+name: psll
+base: core24
+adopt-info: psll
+summary: Compiler for the Pyramid Scheme esoteric language
+description: |
+  psll compiles a lisp-like syntax (.psll) into Pyramid Scheme programs (.pyra)
+  and can run them. Ruby and the Pyramid Scheme interpreter (pyra.rb) are
+  bundled, so `psll run` and `psll compile-and-run` work offline out of the box.
+license: MIT
+confinement: strict
+
+apps:
+  psll:
+    command: bin/psll
+    plugs:
+      - home
+
+parts:
+  psll:
+    plugin: python
+    source: .
+    # keep the snap version in sync with psll/__init__.py
+    override-pull: |
+      craftctl default
+      craftctl set version="$(grep -oP '__version__\s*=\s*"\K[^"]+' psll/__init__.py)"
+    # pyra.rb is pure ruby stdlib (no gems), so bare ruby is enough
+    stage-packages:
+      - ruby
+      #
+
+  # drop the bundled interpreter at $SNAP/pyra.rb where _snap_path() finds it
+  pyra:
+    plugin: dump
+    source: .
+    stage:
+      - pyra.rb
+      #

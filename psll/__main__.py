@@ -21,6 +21,18 @@ from . import __version__
 ArgumentError = partial(argparse.ArgumentError, None)
 sys.tracebacklimit = 0  # spell-checker: disable-line
 
+# Set when running as a snap; points at the snap's read-only root.
+SNAP = os.environ.get("SNAP")
+
+
+def _snap_path(*parts: str) -> Optional[str]:
+    """Resolve a path inside the snap, if running as a snap and the file exists."""
+    if not SNAP:
+        return None
+    path = op.join(SNAP, *parts)
+    return path if op.isfile(path) else None
+
+
 Add_Sig: TypeAlias = Callable[[argparse._SubParsersAction], None]
 Validate_Sig: TypeAlias = Callable[[argparse.Namespace, list[str]], tuple[argparse.Namespace, list[str]]]
 Run_Sig: TypeAlias = Callable[[argparse.Namespace, list[str]], None]
@@ -307,8 +319,8 @@ def check_ruby(ruby: str) -> str:
         if not op.isfile(ruby):
             raise ArgumentError(f"'{ruby}' is not a file.")
     else:
-        # Check if ruby is in the PATH
-        found_ruby = shutil.which("ruby")
+        # Prefer the ruby bundled in the snap; else look on PATH
+        found_ruby = _snap_path("usr", "bin", "ruby") or shutil.which("ruby")
         if found_ruby is None:
             raise ArgumentError("Ruby executable not found. Please specify the path to the ruby executable.")
         ruby = found_ruby
@@ -324,8 +336,8 @@ def check_pyra(pyra: str, verbose: int = 0) -> str:
         if not op.isfile(pyra):
             raise ArgumentError(f"'{pyra}' is not a file.")
     else:
-        # Try to find pyra.rb
-        found_pyra = find_pyra_rb(verbose)
+        # Prefer the pyra.rb bundled in the snap (skips the hash gate); else search
+        found_pyra = _snap_path("pyra.rb") or find_pyra_rb(verbose)
         if found_pyra is None:
             raise ArgumentError(
                 "Pyra.rb file not found. Please specify the path to the pyra.rb file."
@@ -444,6 +456,9 @@ def parse_args() -> tuple[argparse.Namespace, list[str]]:
 
     # Add subcommands
     for subcommand in Subcommand:
+        # pyra.rb is bundled in the snap, so the download command is pointless there
+        if subcommand is Subcommand.DOWNLOAD_PYRA and SNAP:
+            continue
         subcommand.add_subcommand(subparsers)
 
     # Parse arguments
