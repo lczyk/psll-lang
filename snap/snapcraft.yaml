@@ -29,7 +29,7 @@ description: |
 
   Commands:
 
-  * `psll compile prog.psll` -- compile to a .pyra file
+  * `psll compile prog.psll -o prog.pyra` -- compile to Pyramid Scheme
   * `psll run prog.pyra` -- run a Pyramid Scheme program
   * `psll compile-and-run prog.psll` -- both in one go
 
