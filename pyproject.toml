@@ -141,7 +141,9 @@ test = [
 ]
 dev = [
     { include-group = "test" },
-    "flit>=3.12.0",
+    # only for building / publishing. its pip / requests / urllib3 chain has no
+    # patched releases left for 3.9
+    "flit>=3.12.0; python_version >= '3.10'",
     "mypy>=1.15.0",
     "ruff>=0.11.3",
 ]
