@@ -14,28 +14,24 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Checkout Pyramid-Scheme
         run: git submodule update --init # --recursive
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           ruby-version: 2.6
 
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v4
+      - name: Set up uv with Python 3.9
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
-          python-version: 3.9
+          python-version: '3.9'
+          activate-environment: true
 
-      - name: Install flit and uv
-        run: |
-          pip install flit uv
-          uv sync
-
-      - name: Flit install
-        run: flit install
+      - name: Install
+        run: uv sync
 
       - name: Check with ruff
         run: uv run ruff format --check .
@@ -47,9 +43,7 @@ jobs:
         run: bash test.sh -e -c
 
       - name: Push to coveralls
-        run: |
-          uv pip install --system --upgrade coveralls
-          coveralls debug --service=github
+        run: uv run --with coveralls coveralls debug --service=github
 
       # Performance check
 
@@ -57,7 +51,7 @@ jobs:
         run: python ./perf/perf_ascii_trees.py result.perf && cat result.perf
 
       - name: Checkout psll-perf branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: psll-perf
           path: temp-perf

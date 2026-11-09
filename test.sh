@@ -42,7 +42,7 @@ if [ $c ]; then
     ${COVERAGE} erase
     for NAME in "${FILES_TO_COVER[@]}"; do
         echo -e "${GREEN}Collecting coverage for $NAME.py${NC}"
-        ${COVERAGE} run --append --include="./psll/$NAME.py" -m pytest -k "not examples" --no-subtests-shortletter --quiet
+        ${COVERAGE} run --append --include="./psll/$NAME.py" -m pytest -k "not examples" --quiet
 
         # Exit if unittests of this file failed
         if [ "$?" != "0" ]; then

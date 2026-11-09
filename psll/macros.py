@@ -279,7 +279,7 @@ def def_keyword(ast: tuple) -> tuple:
 
     def replacer(node: str) -> tuple | str:
         if len(defs) > 0:
-            for value, definition in reversed(defs):
+            for value, definition in defs[::-1]:
                 if node == value:
                     return definition
         return node

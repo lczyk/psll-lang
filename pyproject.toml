@@ -134,11 +134,14 @@ minversion = "6.0"
 addopts = ["-s", "--tb=short", "--color=yes"]
 
 [dependency-groups]
-dev = [
+test = [
     "coverage>=7.8.0",
-    "flit>=3.12.0",
-    "mypy>=1.15.0",
     "pytest>=8.3.5",
     "pytest-subtests>=0.14.1",
+]
+dev = [
+    { include-group = "test" },
+    "flit>=3.12.0",
+    "mypy>=1.15.0",
     "ruff>=0.11.3",
 ]
