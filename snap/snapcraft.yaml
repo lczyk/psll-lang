@@ -1,13 +1,57 @@
 name: psll
 base: core24
 adopt-info: psll
+title: psll -- Pyramid Scheme compiler
 summary: Compiler for the Pyramid Scheme esoteric language
 description: |
-  psll compiles a lisp-like syntax (.psll) into Pyramid Scheme programs (.pyra)
-  and can run them. Ruby and the Pyramid Scheme interpreter (pyra.rb) are
-  bundled, so `psll run` and `psll compile-and-run` work offline out of the box.
+  [Pyramid Scheme](https://github.com/ConorOBrien-Foxx/Pyramid-Scheme) is an
+  esoteric language whose programs are ascii-art pyramids. psll lets you write
+  them in a lisp-like syntax instead, with macros, strings, `def` and
+  code-golf optimisations, and compiles that to the pyramids for you.
+
+  For example, this psll program
+
+      (set a 6) (set b 7)
+      (out (* a b))
+
+  compiles to
+
+          ^        ^          ^
+         / \      / \        / \
+        /set\    /set\      /out\
+       ^-----^  ^-----^    ^-----
+      /a\   /6\/b\   /7\  /*\
+      ---   ------   --- ^---^
+                        /a\ /b\
+                        --- ---
+
+  and prints `42`.
+
+  Commands:
+
+  * `psll compile prog.psll` -- compile to a .pyra file
+  * `psll run prog.pyra` -- run a Pyramid Scheme program
+  * `psll compile-and-run prog.psll` -- both in one go
+
+  Ruby and the Pyramid Scheme interpreter are bundled, so everything works
+  offline out of the box.
+
+  Read more in [the SIGBOVIK paper](https://github.com/lczyk/psll-lang/blob/master/sigbovik-paper/sigbovik-psll.pdf).
 license: MIT
+grade: stable
 confinement: strict
+website:
+  - https://github.com/lczyk/psll-lang
+  #
+source-code:
+  - https://github.com/lczyk/psll-lang
+  #
+issues:
+  - https://github.com/lczyk/psll-lang/issues
+  #
+contact:
+  - https://github.com/lczyk/psll-lang/issues
+  #
 
 apps:
   psll:
